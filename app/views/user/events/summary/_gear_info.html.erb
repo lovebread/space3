@@ -1,0 +1,23 @@
+<% gears.each do |id, count| %>
+<% gear_id = id.split('_').first %>
+<% character_id = id.split('_').last %>
+<% gear = @event.guild.gears.find(gear_id) %>
+<% character = GameCharacter.find(character_id) %>
+<tr class="jl-cutline" id='gear_<%= gear_id %>_<%= character_id %>'>
+  <td class="tl"><%= gear.name %></td>
+  <td>
+    <%= link_to_function count, "Iyxzone.Event.Summary.Gear.editCount(this)" %>
+    <div class="textfield" style="width: 80px; margin: 0 auto;display:none">
+      <%= text_field_tag '', count, :onblur => "Iyxzone.Event.Summary.Gear.updateCount(this, #{gear_id}, #{character_id})" %>
+    </div>
+  </td>
+  <td><%= gear.cost %></td>
+  <td>
+    <div style="position:relative;text-align:left">
+      <%= link_to_function "#{avatar_image character.user, :class => "w-l", :algin => "absmiddle", :size => :small}<span><strong>#{character.name}</strong></span>", "Iyxzone.Event.Summary.Gear.toggleCharacterList(#{gear_id}, this)", :class => 'member-toggle' %>
+      <div class="drop-box" style="position: absolute; left: 0pt; top: 0px; display: none;" character_id=<%= character.id %>></div>
+    </div>
+  </td>
+  <td><%= link_to_function '', "Iyxzone.Event.Summary.Gear.remove(#{gear_id}, #{character_id}, this)", :class => "icon-active" %></td> 
+</tr>
+<% end %>

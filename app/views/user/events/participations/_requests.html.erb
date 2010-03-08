@@ -1,0 +1,16 @@
+<% requests.each do |request| %>
+<% character = request.character %>
+<% participant = request.participant %>
+<li id='event_request_<%= request.id %>' name='<%= character.name %>' pinyin='<%= character.pinyin %>'>
+  <%= avatar participant, :class=>'imgbox01'%>
+  <p><%= profile_link participant, :class=>'blk' %>
+  <span class='red blk'><%= character.name %></span>
+  <span class='operation' id='event_request_operation_<%= request.id %>'>
+	<% if @user == current_user %>
+    <%= link_to_remote '接受', :url => accept_event_request_url(@event, request), :method => :put  %> |
+    <%= facebox_confirm '拒绝', decline_event_request_url(@event, request), {:msg => '你确定要决绝这个人加入的请求吗?', :method => :delete} %>
+  <% end %>
+	</span>
+	</p>
+</li>
+<% end %>

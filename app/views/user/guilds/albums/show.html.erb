@@ -1,0 +1,101 @@
+<div id="canvas" class="round_r_t"><div class="round_l_t"><div class="round_r_b"><div class="round_l_b">
+  <div class="round_m"><div class="round_body">
+    <div class="friend-head space s_clear">
+      <span class="left"><%= album_cover_image @guild.album, :class => "imgbox01" %></span>
+      <p class="left">
+        <strong><%= @guild.title%>公会照片</strong><br/>
+        <%= link_to guild_url(@guild), :class => 'red' %>
+      </p>
+    </div>
+    <div class="box02 canvas_int">
+      <div class="tab tab01">
+        <div class="right">
+          <% if @membership and (@membership.is_president? or @membership.is_veteran?) %>
+            <%= link_to "上传照片", new_guild_photo_url(:album_id => @album.id) %>
+          <% end %>
+        </div>
+        <ul>
+          <li><span><%= link_to "热门照片", hot_personal_photos_url(:uid => current_user.id) %></span></li>
+          <li><span><%= link_to "我的相册", personal_albums_url(:uid => current_user.id) %></span></li>
+          <li><span><%= link_to "圈了我的照片", relative_personal_photos_url(:uid => current_user.id) %></span></li>
+          <li><span><%= link_to '好友相册', friends_personal_albums_url(:uid => current_user.id) %></span></li>
+        </ul>       
+      </div>
+      <div class="pic-box">
+        <div class="path-box">
+          <label>公会"<%= guild_link @guild %>"</label>
+          <span>相册</span>
+					<%= facebox_link '分享', new_sharing_url(:shareable_type => 'Album', :shareable_id => @album.id), :class => 'right love-btn' %>
+        </div>
+        <table class="photo-edit-list">
+				<% k = @photos.size/4 %>
+        <% if @photos.total_entries != 0 %>
+				<% 0.upto(k) { |i| %>
+				<% if k == i%>
+					<% n = @photos.size % 4 - 1 %>
+				<% else %>
+					<% n = 3 %>
+				<% end %>
+				<% j = i*4 %>
+				<tr>
+        <% @photos[j..j+n].each do |p| %>                         
+          <td valign="bottom" width=25%>
+            <%= photo_link p, :class => 'imgbox02' %>
+					</td>
+				<% end %>
+				<% if n < 3 %>
+					<% n.upto(2){ %>
+						<td valign="bottom" width=25%></td>
+					<% } %>
+				<% end %>
+				</tr>
+        <% if @membership and @membership.is_president? %>
+					<tr>
+					<% @photos[j..j+n].each do |p| %>                         
+						<td><%= facebox_link "", edit_guild_photo_url(p), :class => "icon-active icon-active-edit" %><%= facebox_confirm '', guild_photo_url(p), {:msg => '你确定要删除这张图片吗', :method => 'delete'}, {:class => "icon-active"} %></td>
+					<% end %>
+					<% if n < 3 %>
+						<% n.upto(2){ %>
+							<td></td>
+						<% } %>
+					<% end %>
+					</tr>
+        <% end %>
+        <% } %>
+        <%= will_paginate @photos %>
+        <% else %>
+					<% if @membership and @membership.is_president? %>
+					<div class='gray'>公会还没有图片，你赶紧<%= link_to '上传', new_guild_photo_url(:album_id => @album.id) %>吧</div>
+					<% else %>
+					<div class='gray'>公会还没有图片</div>
+					<% end %>
+        <% end %>
+				</table>
+      <div class="pic-desc">
+        <% if @membership and @membership.is_president? %>
+          <h4 class='box06'><%= in_place_text_field :span, @album, :description, true, guild_album_url(@album), {}, {:empty_text => '点击添加相册描述', :parameter_name => 'album[description]', :rows => 2, :cols => 90}, {} %></h4>
+        <% else %>
+          <h4 class="box06"><%= @album.description %></h4>
+        <% end %>
+        <p class="gray">
+        <% unless @album.uploaded_at.blank? %>
+            <span class="time-update"><%= ftime @album.uploaded_at %>更新</span><br/>
+          <% end %>
+          <span class="time-create"><%= ftime @album.created_at %>创建</span>
+        </p>
+      </div>
+			</div>
+      <div class="foot cmt-space">
+        <div class="feed-list">
+          <h4>评论(<%= @album.comments_count %>)</h4>
+          <%= render :partial => 'user/comments/comment_box', :locals => {:commentable => @album, :recipient => @user} %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div>
+</div></div></div></div>
+
+<% unless @reply_to.blank? %>
+<%= javascript_tag "Iyxzone.Comment.set('guild_album', #{@album.id}, '#{@reply_to.login}', #{@reply_to.id});" %>
+<% end %>

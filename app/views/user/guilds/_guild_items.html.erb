@@ -1,0 +1,33 @@
+<table cellpadding="0" cellspacing="0">
+	<% guild_items.each do |guild| %>
+  <% membership = guild.memberships.find_by_user_id(current_user.id) %>
+  <tr>
+    <td>
+      <div class="imgwrap">
+        <%= album_cover guild.album, :class => 'imgbox01' %>
+      </div>
+      <div class="data jl-data">
+        <p><%= guild_link guild, :class => 'shine' %></p>
+        <p>地点：<%= server_location guild.game_server %></p>
+        <p>会长: <%= profile_link guild.president %></p>
+        <p>创建于：<%= ftime guild.created_at %> </p>
+        <p>你的状态：<%= show_membership_info membership, guild %>
+				<% if current_user == guild.president %>
+        <span>
+          相关操作：<%= link_to "邀请更多人", new_guild_invitation_url(guild) %>
+        </span></p>
+				<% end %>
+      </div>
+    </td>
+		<td class="party-num">
+			<%= link_to "#{guild.people_count}人参加", guild_memberships_url(guild) %>
+    </td>
+  </tr>
+  <% end %>
+</table>
+
+<% if @remote %>
+  <%= will_paginate guild_items, :renderer => :RemoteLinkRenderer, :remote => @remote %>
+<% else %>
+  <%= will_paginate guild_items %>
+<% end %>
